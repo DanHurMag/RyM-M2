@@ -1,4 +1,4 @@
-import { ADD_FAV, FILTER, REMOVE_FAV, ORDER } from "../actions/types"
+import { ADD_FAV, FILTER, REMOVE_FAV, ORDER, RESET } from "../actions/types"
 
 const initialState = {
     allFavorites: [],
@@ -11,36 +11,50 @@ export default function reducer(state = initialState, { type, payload }) {
             return {
                 ...state,
                 allFavorites: [...state.allFavorites, payload],
+                favorites: [...state.favorites, payload],
             };
 
         case REMOVE_FAV:
-            const filterRemove = state.allFavorites.filter((fav) => fav.id !== payload)
+            const filterRemove = state.allFavorites.filter((fav) => fav.id !== payload);
             return {
                 ...state,
-                allFavorites: filtered
+                allFavorites: filterRemove,
             };
 
         case FILTER:
-            const filterByGender = state.allFavorites.filter((fav) => fav.gender === payload);
+            if (payload === "All") return { ...state, favorites: state.allFavorites };
+
+            const filterByGender = state.allFavorites.filter(
+                (fav) => fav.gender === payload
+            );
             return {
                 ...state,
                 favorites: filterByGender,
             };
 
         case ORDER:
-            const ordered = state.allFavorites.toSorted((a, b) =>
-                payload === "Asc" ? a.id - b.id : b.id - a.id
-            );
+            const ordered = state.favorites.sort((a, b) => {
+                switch (payload) {
+                    case "Asc":
+                        return a.id < b.id ? -1 : 1;
+                    case "Desc":
+                        return a.id > b.id ? -1 : 1;
+                    case "All":
+                        return a.id < b.id ? -1 : 1;
+                    default:
+                        return 0;
+                }
+            });
             return {
                 ...state,
-                favorites: ordered
+                favorites: ordered,
             };
 
         case RESET:
             return {
                 ...state,
-                favorites: allFavorites,
-            }
+                favorites: state.allFavorites,
+            };
 
         default:
             return {

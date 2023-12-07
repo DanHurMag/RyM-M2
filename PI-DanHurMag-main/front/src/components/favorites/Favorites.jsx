@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { filterCards, orderCards } from "../../redux/actions";
-import Cards from "../cards/Card";
+import { filterCards, orderCards, reset } from "../../redux/actions";
+import Cards from "../cards/Cards";
 
 export default function Favorites() {
   const favorites = useSelector((state) => state.favorites);
@@ -18,12 +18,26 @@ export default function Favorites() {
     }
   };
 
+  const handleClick = () => {
+    dispatch(reset());
+  };
+
   return (
     <div>
       <select name="order" id="order" onChange={handleChange}>
+        <option value="All">All</option>
         <option value="Asc">Ascendente</option>
-        <Cards characters={favorites} />
+        <option value="Desc">Descendente</option>
       </select>
+      <select name="filter" id="filter" onChange={handleChange}>
+        <option value="All">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Genderless">Genderless</option>
+        <option value="unknown">Unknown</option>
+      </select>
+      <button onClick={handleClick}>Reset</button>
+      <Cards characters={favorites} />
     </div>
   );
 }
