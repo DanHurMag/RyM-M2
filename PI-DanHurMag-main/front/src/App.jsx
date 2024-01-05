@@ -17,20 +17,38 @@ function App() {
   const { pathname } = useLocation();
   const URL = `https://rym2.up.railway.app/api/character/10?key=pi-danhurmag`;
   const apiKey = "pi-danhurmag";
-  const onSearch = (input) => {
-    const url = `${URL}/${input}?key=${apiKey}`;
 
-    axios(url)
-      .then(({ status, data }) => {
-        if (status >= 200 && status < 400) {
-          if (data.name) {
-            setCharacters((oldState) => [...oldState, data]);
-          }
-        } else {
-          window.alert("¡No hay personajes con este ID!");
+  //promesas
+  // const onSearch = (input) => {
+  //   const url = `${URL}/${input}?key=${apiKey}`;
+
+  //   axios(url)
+  //     .then(({ status, data }) => {
+  //       if (status >= 200 && status < 400) {
+  //         if (data.name) {
+  //           setCharacters((oldState) => [...oldState, data]);
+  //         }
+  //       } else {
+  //         window.alert("¡No hay personajes con este ID!");
+  //       }
+  //     })
+  //     .catch((error) => window.alert("Ocurrio un error"));
+  // };
+
+  //async
+  const onSearch = async (input) => {
+    try {
+      const { status, data } = await axios(`${URL}/characters/${input}`);
+      if (status >= 200 && status < 400) {
+        if (data.name) {
+          setCharacters((oldState) => [...oldState, data]);
         }
-      })
-      .catch((error) => window.alert("Ocurrio un error"));
+      } else {
+        window.alert("¡No hay personajes con este ID!");
+      }
+    } catch (err) {
+      window.alert("Ocurrio un error");
+    }
   };
 
   const onClose = (id) => {
@@ -38,8 +56,25 @@ function App() {
     setCharacters(filtered);
   };
 
-  const login = ({ email, password }) => {
-    setAccess(true);
+  //promesas
+  // const login = ({ email, password }) => {
+  //   //   setAccess(true);
+  //   // };
+  //   axios(`${URL}/login?email=${email}&password=${password}`)
+  //     .then((res) => res.data.access)
+  //     .then((access) =>
+  //       access ? setAccess(true) && navigate("/home") : setAccess(false)
+  //     );
+  // };
+
+  // async
+  const login = async ({ email, password }) => {
+    try {
+      const { data } = await axios(
+        `${URL}/login?email=${email}&password=${password}`
+      );
+      data.access ? setAccess(true) && navigate("/home") : setAccess(false);
+    } catch (err) {}
   };
 
   useEffect(() => {
